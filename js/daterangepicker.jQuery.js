@@ -94,7 +94,7 @@
                     // Check if the number of selected days is out of allowed range.
                     if (!_.isUndefined(options.maximumNumberOfDays) && options.maximumNumberOfDays > 0) {
                         var duration = moment.duration(moment(datePickerB).diff(moment(datePickerA)));
-                        var dateDiff = duration.asDays();
+                        var dateDiff = parseInt(duration.asDays());
 
                         if (dateDiff > options.maximumNumberOfDays) {
                             errorMessageOutOfRange.show();
