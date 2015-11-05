@@ -47,6 +47,7 @@
                     }),
                     maxDate: Date.today(),
                     tzOffset: 0, // The timezone offset. Eg. -0700 for MST
+                    maximumNumberOfDays: 0, // Maximum number of allowed days selected 0 = no limit
                     datepickerOptions: null //object containing native UI datepicker API options
                 }, settings);
 
@@ -89,6 +90,21 @@
                         minute: timeB.minute,
                         second: 0
                     })
+
+                    // Check if the number of selected days is out of allowed range.
+                    if (!_.isUndefined(options.maximumNumberOfDays) && options.maximumNumberOfDays > 0) {
+                        var duration = moment.duration(moment(datePickerB).diff(moment(datePickerA)));
+                        var dateDiff = duration.asDays();
+
+                        if (dateDiff > options.maximumNumberOfDays) {
+                            errorMessageOutOfRange.show();
+                            doneBtn.trigger('disable');
+                            return;
+                        } else {
+                            errorMessageOutOfRange.hide();
+                            doneBtn.trigger('enable');
+                        }
+                    }
 
                     // Show the error message if dateA is before dateB
                     if (datePickerA.compareTo(datePickerB) > 0) {
@@ -364,8 +380,20 @@
                     '</div>')
                     .appendTo(rpPickers);
 
+                if (!_.isUndefined(options.maximumNumberOfDays) && options.maximumNumberOfDays > 0) {
+                    var errorMessageOutOfRange = $(
+                            '<div style="clear: both"></div>' +
+                            '<div id="errorOutOfRange" class="error ui-state-error ui-corner-all ui-helper-clearfix" style="display:none">' +
+                                '<p>' +
+                                    '<span class="ui-icon ui-icon-alert"></span>' +
+                                    '<strong>Error:</strong> Only ' + options.maximumNumberOfDays + ' consecutive days of Alert History can be viewed at one time.' +
+                                '</p>' +
+                            '</div>')
+                            .appendTo(rpPickers);
+                }
+
                 var doneBtn =
-                $('<div class="input-block-level"><button class="btn btn-small btn-success pull-right"><i class="icon-ok"></i>'+ options.doneButtonText +'</button></div>')
+                $('<div class="input-block-level"><button id="doneBtn" class="btn btn-small btn-success pull-right"><i class="icon-ok"></i>'+ options.doneButtonText +'</button></div>')
                     .click(function() {
                         rp.find('.ui-datepicker-current-day').trigger('click');
                         hideRP();
@@ -378,12 +406,12 @@
                             $(this).removeClass('ui-state-hover');
                         })
                     .bind('disable', function () {
-                        $(this).attr('disabled', true);
-                        $(this).addClass('disabled');
+                        $("#doneBtn").attr('disabled', true);
+                        $("#doneBtn").addClass('disabled');
                     })
                     .bind('enable', function () {
-                        $(this).removeAttr('disabled');
-                        $(this).removeClass('disabled');
+                        $("#doneBtn").removeAttr('disabled');
+                        $("#doneBtn").removeClass('disabled');
                     })
                     .appendTo(rpPickers);
 
@@ -496,3 +524,4 @@
     });
 
 })(jQuery);
+
