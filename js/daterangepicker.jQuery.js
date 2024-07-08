@@ -152,7 +152,7 @@
 
                 // Capture Dates from input(s)
                 var inputDateAtemp, inputDateBtemp;
-                if (rangeInput.size() == 2) {
+                if (rangeInput.length == 2) {
                     inputDateAtemp = Date.parse( rangeInput.eq(0).val() );
                     inputDateBtemp = Date.parse( rangeInput.eq(1).val() );
                     if (inputDateAtemp == null) {
